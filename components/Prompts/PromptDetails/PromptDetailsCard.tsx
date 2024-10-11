@@ -3,7 +3,7 @@ import Ratings from "@/utils/Ratings";
 import { styles } from "@/utils/styles";
 import { Button, Chip } from "@nextui-org/react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Marquee from "react-fast-marquee";
 import { IoCloseOutline } from "react-icons/io5";
 import { Elements } from "@stripe/react-stripe-js";
@@ -18,21 +18,21 @@ const PromptDetailsCard = ({
   clientSecret: string;
   stripePromise: any;
 }) => {
-  const [activeImage, setactiveImage] = useState(promptData?.images[0]?.url);
+  const [activeImage, setActiveImage] = useState(promptData?.images[0]?.url);
   const [open, setOpen] = useState(false);
-  const tags = promptData?.tags;
+  const tags = promptData?.tags || "";
 
   const tagsList = tags.split(",").map((tag: string) => tag.trim());
 
-
-  const percentageDifference = ((promptData?.estimatedPrice - promptData?.price) / promptData?.estimatedPrice) * 100;
+  const percentageDifference =
+    ((promptData?.estimatedPrice - promptData?.price) / promptData?.estimatedPrice) * 100;
 
   const promptDiscount = percentageDifference?.toFixed(0);
-  
 
   return (
     <div className="bg-[#1211023] p-3 w-full min-h-[50vh] shadow rounded-xl mt-8">
       <div className="w-full flex flex-wrap">
+        {/* Image Section */}
         <div className="md:w-[48%] w-full m-2">
           <div>
             <Image
@@ -40,7 +40,7 @@ const PromptDetailsCard = ({
               width={500}
               height={500}
               className="rounded-xl w-full object-contain"
-              alt=""
+              alt="Prompt Image"
             />
           </div>
           <br />
@@ -50,16 +50,18 @@ const PromptDetailsCard = ({
                 <Image
                   src={image.url}
                   key={image.url}
-                  onClick={() => setactiveImage(image.url)}
+                  onClick={() => setActiveImage(image.url)}
                   width={250}
                   height={250}
-                  alt=""
+                  alt="Prompt Thumbnail"
                   className="m-2 cursor-pointer rounded-md"
                 />
               ))}
             </Marquee>
           </div>
         </div>
+
+        {/* Details Section */}
         <div className="md:w-[48%] w-full m-2 p-2">
           <h1 className={`${styles.label} !text-2xl font-Monserrat`}>
             {promptData?.name}
@@ -98,9 +100,7 @@ const PromptDetailsCard = ({
           </p>
           <br />
           <div className="w-full">
-            <span
-              className={`${styles.label} !text-2xl pl-2 text-white font-Monserrat`}
-            >
+            <span className={`${styles.label} !text-2xl pl-2 text-white font-Monserrat`}>
               Tags
             </span>
             <br />
@@ -110,9 +110,7 @@ const PromptDetailsCard = ({
                   className="bg-[#1e1c2f] rounded-full h-[35px] mr-2 my-2 2xl:mr-4 cursor-pointer"
                   key={tag}
                 >
-                  <span
-                    className={`${styles.label} !text-xl text-white font-Monserrat`}
-                  >
+                  <span className={`${styles.label} !text-xl text-white font-Monserrat`}>
                     {tag}
                   </span>
                 </Chip>
@@ -129,6 +127,8 @@ const PromptDetailsCard = ({
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
       {open && (
         <div className="w-full h-screen bg-[#00000036] fixed top-0 left-0 z-50 flex items-center justify-center">
           <div className="w-[500px] min-h-[500px] bg-white rounded-xl shadow p-3">
@@ -140,14 +140,12 @@ const PromptDetailsCard = ({
               />
             </div>
             <div className="w-full">
-              {stripePromise && clientSecret && (
+              {clientSecret && stripePromise ? (
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
-                  <CheckoutForm
-                    setOpen={setOpen}
-                    open={open}
-                    promptData={promptData}
-                  />
+                  <CheckoutForm setOpen={setOpen} open={open} promptData={promptData} />
                 </Elements>
+              ) : (
+                <p>Loading payment form...</p>
               )}
             </div>
           </div>

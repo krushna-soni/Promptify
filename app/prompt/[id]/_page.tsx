@@ -28,6 +28,7 @@ const PromptDetailsPage = ({
   const [prompt, setPrompt] = useState<propmt>();
   const [loading, setLoading] = useState(true);
 
+  // Fetch the prompt data based on promptId
   const fetchPromptData = async () => {
     setLoading(true);
     try {
@@ -41,29 +42,33 @@ const PromptDetailsPage = ({
     }
   };
 
+  // Fetch prompt data when component mounts
   useEffect(() => {
     fetchPromptData();
   }, []);
 
+  // Set the component as mounted
   useEffect(() => {
     if (!isMounted) {
       setIsMounted(true);
     }
   }, [isMounted]);
 
+  // Set up Stripe and create payment intent when prompt is available
   useEffect(() => {
     if (prompt) {
       if (publishAbleKey) {
-        const amount = Math.round(prompt.price * 100);
+        const amount = Math.round(prompt.price * 100); // Set amount in cents
         newPaymentIntent({ amount });
-        setStripePromise(loadStripe(publishAbleKey));
+        setStripePromise(loadStripe(publishAbleKey)); // Initialize stripePromise with publishable key
       }
     }
   }, [publishAbleKey, prompt]);
 
-  const newPaymentIntent = async ({ amount }: { amount: Number }) => {
-    const paymentIntent = await stripePaymentIntent({ amount });
-    setClientSecret(paymentIntent?.client_secret);
+  // Create a new payment intent and set the client secret
+  const newPaymentIntent = async ({ amount }: { amount: number }) => {
+    const clientSecret = await stripePaymentIntent({ amount });
+    setClientSecret(clientSecret);
   };
 
   if (!isMounted) {
@@ -85,7 +90,7 @@ const PromptDetailsPage = ({
               <PromptDetails
                 promptData={prompt}
                 stripePromise={stripePromise}
-                clientSecret={clientSecret}
+                clientSecret={clientSecret} // Pass clientSecret to PromptDetails
               />
               <Divider className="bg-[#ffffff14] mt-5" />
               <Footer />

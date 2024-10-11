@@ -1,17 +1,17 @@
 "use server";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-// send stripe publishable key
+// Send Stripe publishable key (safe for the frontend)
 export const stripePublishableKey = () => {
-  const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY;
-  return publishableKey;
+  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  return publishableKey; // Safe to expose to the client
 };
 
-// send stripe payment intent
-export const stripePaymentIntent = async ({ amount }: { amount: Number }) => {
+// Send Stripe payment intent and return client secret
+export const stripePaymentIntent = async ({ amount }: { amount: number }) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
+      amount, // Ensure this is in the smallest currency unit (e.g., cents for USD)
       currency: "USD",
       metadata: {
         company: "Promptify",
@@ -21,7 +21,7 @@ export const stripePaymentIntent = async ({ amount }: { amount: Number }) => {
       },
     });
 
-    return paymentIntent;
+    return paymentIntent.client_secret; // Return only client_secret
   } catch (error) {
     console.log(error);
   }
