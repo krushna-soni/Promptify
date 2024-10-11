@@ -8,7 +8,7 @@ type Props = {
 
 export const addWithdraw = async ({ sellerId, amount }: Props) => {
   try {
-    const respose = await prisma.withdraws.create({
+    const respose = await prisma.withdraw.create({
       data: {
         sellerId,
         amount,
