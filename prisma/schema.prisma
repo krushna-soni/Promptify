@@ -20,7 +20,7 @@ model Shops {
   updatedAt        DateTime    @updatedAt
   userId           String      @unique
   bank             Banks?
-  withdraws        withdraws[]
+  withdraws        Withdraw[]  // renamed to make it singular and conventional
 }
 
 model Images {
@@ -49,7 +49,7 @@ model PromptFiles {
   promptsId String?  @db.ObjectId
 }
 
-enum promptStatus {
+enum PromptStatus {
   Pending
   Live
   Declined
@@ -81,7 +81,7 @@ model Prompts {
   promptUrl        PromptFiles[]
   sellerId         String
   orders           Orders[]
-  status           promptStatus  @default(Pending)
+  status           PromptStatus  @default(Pending)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 }
@@ -98,7 +98,7 @@ model Banks {
   swift_code          String
 }
 
-model withdraws {
+model Withdraw {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   sellerId  String   @db.ObjectId
   shop      Shops    @relation(fields: [sellerId], references: [id])
