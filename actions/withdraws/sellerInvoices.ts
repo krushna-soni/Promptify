@@ -4,7 +4,7 @@ import prisma from "@/lib/prismaDb";
 
 export const sellerInvoices = async ({ sellerId }: { sellerId: string }) => {
   try {
-    const invoices = await prisma.withdraws.findMany({
+    const invoices = await prisma.withdraw.findMany({
       where: {
         sellerId,
       },
